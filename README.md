@@ -12,14 +12,17 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 - 🗄️ Database MySQL (bukan SQLite)
 - 🧹 Auto-cleanup email lama (24 jam)
 - 📱 Responsive design
+- 🕐 Timestamp menggunakan waktu lokal komputer (bukan waktu server)
 
 ### Admin Features:
-- 🔐 Admin panel dengan login
+- 🔐 Admin panel dengan login (database-based, password hashed)
 - ✏️ Buat custom email (contoh: support@alrelshop.my.id)
 - 📊 Dashboard statistik
 - 👀 Monitor semua email masuk
 - 🗑️ Hapus email manual
 - 📋 Copy email dengan satu klik
+- 👥 Kelola multiple admin users
+- 🔐 Ubah password dengan aman
 
 ## 🚀 Quick Start
 
@@ -29,7 +32,12 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 
 ### Login Admin:
 - **Username**: `admin`
-- **Password**: `admin123`
+- **Password**: `admin123` (default - segera ubah setelah setup!)
+
+### Setup Admin (Pertama Kali):
+1. Jalankan: `https://tempmail.alrelshop.my.id/admin/setup_admin.php`
+2. Login dengan kredensial default
+3. Segera ubah password di menu "Ubah Password"
 
 ## 📁 File Structure
 

@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once '../config.php';
+require_once '../functions.php';
 
 // Check if already logged in
 if (isset($_SESSION['admin_logged_in'])) {
@@ -10,17 +12,38 @@ if (isset($_SESSION['admin_logged_in'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
+    $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     
-    // Simple authentication
-    if ($username === 'admin' && $password === 'admin123') {
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_username'] = $username;
-        header('Location: index.php');
-        exit;
+    if (!empty($username) && !empty($password)) {
+        try {
+            $conn = getDBConnection();
+            $stmt = $conn->prepare("SELECT id, username, password_hash, email FROM admin_users WHERE username = :username AND is_active = 1");
+            $stmt->execute(['username' => $username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && password_verify($password, $user['password_hash'])) {
+                // Login successful
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_username'] = $user['username'];
+                $_SESSION['admin_id'] = $user['id'];
+                $_SESSION['admin_email'] = $user['email'];
+                
+                // Update last login
+                $update = $conn->prepare("UPDATE admin_users SET last_login = NOW() WHERE id = :id");
+                $update->execute(['id' => $user['id']]);
+                
+                header('Location: index.php');
+                exit;
+            } else {
+                $error = 'Username atau password salah!';
+            }
+        } catch (PDOException $e) {
+            $error = 'Terjadi kesalahan sistem. Silakan coba lagi.';
+            error_log("Login error: " . $e->getMessage());
+        }
     } else {
-        $error = 'Username atau password salah!';
+        $error = 'Username dan password harus diisi!';
     }
 }
 ?>

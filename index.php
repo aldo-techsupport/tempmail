@@ -105,7 +105,7 @@ $emails = getEmails($current_email);
                             <div class="email-subject">
                                 <?php echo htmlspecialchars($email['subject']); ?>
                             </div>
-                            <div class="email-date">
+                            <div class="email-date" data-timestamp="<?php echo htmlspecialchars($email['received_at']); ?>" data-unix="<?php echo $email['timestamp']; ?>">
                                 <?php echo date('d/m/Y H:i', strtotime($email['received_at'])); ?>
                             </div>
                         </div>

@@ -17,7 +17,7 @@ function generateRandomEmail() {
 // Get all emails for specific address
 function getEmails($email_address) {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT * FROM emails WHERE to_email = :email ORDER BY received_at DESC");
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails WHERE to_email = :email ORDER BY received_at DESC");
     $stmt->execute(['email' => $email_address]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -25,7 +25,7 @@ function getEmails($email_address) {
 // Get single email by ID
 function getEmailById($id) {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT * FROM emails WHERE id = :id");
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails WHERE id = :id");
     $stmt->execute(['id' => $id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }

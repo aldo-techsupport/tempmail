@@ -56,10 +56,10 @@ $stats = [
 ];
 
 // Get recent emails
-$recent_emails = $conn->query("SELECT * FROM emails ORDER BY received_at DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
+$recent_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails ORDER BY received_at DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
 
 // Get generated emails
-$generated_emails = $conn->query("SELECT * FROM generated_emails ORDER BY created_at DESC LIMIT 50")->fetchAll(PDO::FETCH_ASSOC);
+$generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timestamp FROM generated_emails ORDER BY created_at DESC LIMIT 50")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -74,7 +74,9 @@ $generated_emails = $conn->query("SELECT * FROM generated_emails ORDER BY create
         <header class="admin-header">
             <h1>🔧 Admin Panel</h1>
             <div class="admin-nav">
-                <span>Welcome, Admin</span>
+                <span>Welcome, <?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
+                <a href="manage_admins.php" style="margin-right: 10px;">👥 Kelola Admin</a>
+                <a href="change_password.php" style="margin-right: 10px;">🔐 Ubah Password</a>
                 <a href="logout.php" class="btn-logout">Logout</a>
             </div>
         </header>
@@ -134,7 +136,9 @@ $generated_emails = $conn->query("SELECT * FROM generated_emails ORDER BY create
                                     <strong><?php echo htmlspecialchars($email['email_address']); ?></strong>
                                     <button onclick="copyToClipboard('<?php echo htmlspecialchars($email['email_address']); ?>')" class="btn-copy-small">📋</button>
                                 </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($email['created_at'])); ?></td>
+                                <td class="local-time" data-timestamp="<?php echo htmlspecialchars($email['created_at']); ?>" data-unix="<?php echo $email['timestamp']; ?>">
+                                    <?php echo date('d/m/Y H:i', strtotime($email['created_at'])); ?>
+                                </td>
                                 <td>
                                     <a href="../index.php?email=<?php echo urlencode($email['email_address']); ?>" target="_blank" class="btn-view">Lihat Inbox</a>
                                 </td>
@@ -164,7 +168,9 @@ $generated_emails = $conn->query("SELECT * FROM generated_emails ORDER BY create
                                 <td><?php echo htmlspecialchars($email['to_email']); ?></td>
                                 <td><?php echo htmlspecialchars($email['from_email']); ?></td>
                                 <td><?php echo htmlspecialchars($email['subject']); ?></td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($email['received_at'])); ?></td>
+                                <td class="local-time" data-timestamp="<?php echo htmlspecialchars($email['received_at']); ?>" data-unix="<?php echo $email['timestamp']; ?>">
+                                    <?php echo date('d/m/Y H:i', strtotime($email['received_at'])); ?>
+                                </td>
                                 <td>
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Hapus email ini?')">
                                         <input type="hidden" name="action" value="delete_email">
@@ -186,6 +192,34 @@ $generated_emails = $conn->query("SELECT * FROM generated_emails ORDER BY create
                 alert('Email copied: ' + text);
             });
         }
+        
+        // Format date to local time
+        function formatDateLocal(dateString, unixTimestamp) {
+            let date;
+            if (unixTimestamp) {
+                date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
+            } else {
+                date = new Date(dateString);
+            }
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
+        
+        // Convert all timestamps to local time
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeElements = document.querySelectorAll('.local-time[data-timestamp]');
+            timeElements.forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                const unixTimestamp = element.getAttribute('data-unix');
+                if (timestamp) {
+                    element.textContent = formatDateLocal(timestamp, unixTimestamp);
+                }
+            });
+        });
     </script>
 </body>
 </html>

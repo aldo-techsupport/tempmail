@@ -185,7 +185,7 @@ function updateEmailList(emails) {
                 ${escapeHtml(email.subject)}
             </div>
             <div class="email-date">
-                ${formatDate(email.received_at)}
+                ${formatDate(email.received_at, email.timestamp)}
             </div>
         </div>
     `).join('');
@@ -314,7 +314,7 @@ ${bodyContent}
         <div class="email-meta">
             <p><strong>Dari:</strong> ${escapeHtml(email.from_email)}</p>
             <p><strong>Kepada:</strong> ${escapeHtml(email.to_email)}</p>
-            <p><strong>Tanggal:</strong> ${formatDate(email.received_at)}</p>
+            <p><strong>Tanggal:</strong> ${formatDate(email.received_at, email.timestamp)}</p>
         </div>
         ${viewToggle}
         <div class="email-body" id="emailBodyContainer">
@@ -452,9 +452,17 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Format date
-function formatDate(dateString) {
-    const date = new Date(dateString);
+// Format date - menggunakan waktu lokal komputer
+function formatDate(dateString, timestamp) {
+    // Jika ada timestamp Unix, gunakan itu (lebih akurat)
+    let date;
+    if (timestamp) {
+        date = new Date(timestamp * 1000); // Convert Unix timestamp to milliseconds
+    } else {
+        date = new Date(dateString);
+    }
+    
+    // Konversi ke waktu lokal komputer pengguna
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
@@ -476,8 +484,21 @@ function stopAutoRefresh() {
     }
 }
 
+// Convert all timestamps to local time
+function convertTimestampsToLocal() {
+    const dateElements = document.querySelectorAll('.email-date[data-timestamp]');
+    dateElements.forEach(element => {
+        const timestamp = element.getAttribute('data-timestamp');
+        const unixTimestamp = element.getAttribute('data-unix');
+        if (timestamp) {
+            element.textContent = formatDate(timestamp, unixTimestamp);
+        }
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    convertTimestampsToLocal();
     startAutoRefresh();
 });
 
