@@ -1,0 +1,12 @@
+# Protect admin directory
+<Files "*.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Disable directory listing
+Options -Indexes
+
+# Custom error pages
+ErrorDocument 403 /admin/login.php
+ErrorDocument 404 /admin/login.php
