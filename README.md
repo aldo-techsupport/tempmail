@@ -6,14 +6,12 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 
 ### User Features:
 - 📧 Generate email random otomatis
-- 🔑 Token akses untuk restore email lama
 - 📬 Menerima email dari luar (real-time)
 - 🔄 Auto-refresh inbox setiap 10 detik
 - ♾️ Unlimited email generation (1000+)
 - 🗄️ Database MySQL (bukan SQLite)
 - 🧹 Auto-cleanup email lama (24 jam)
 - 📱 Responsive design
-- 🔗 Direct URL access dengan token
 
 ### Admin Features:
 - 🔐 Admin panel dengan login
@@ -30,8 +28,8 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 - **Admin**: https://tempmail.alrelshop.my.id/admin/
 
 ### Login Admin:
-- Username: `admin`
-- Password: `admin123`
+- **Username**: `admin`
+- **Password**: `admin123`
 
 ## 📁 File Structure
 
@@ -58,11 +56,12 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 
 ### Database (config.php):
 ```php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'madev');
-define('DB_PASS', 'madev');
-define('DB_NAME', 'madev');
-define('EMAIL_DOMAIN', '@alrelshop.my.id');
+<?php
+$host = 'localhost';
+$dbname = 'XXXXX';
+$username = 'XXXXX';
+$password = 'XXXXX';
+?>
 ```
 
 ### Postfix Configuration:
