@@ -292,12 +292,70 @@ body {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .admin-container {
+        padding: 15px;
+    }
+    
+    .admin-section {
+        padding: 20px;
+    }
+}
+
 @media (max-width: 768px) {
     .admin-header {
         flex-direction: column;
         gap: 15px;
+        padding: 15px;
     }
     
+    .admin-header h1 {
+        font-size: 1.5em;
+    }
+    
+    .admin-nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .admin-nav a,
+    .admin-nav span {
+        width: 100%;
+        text-align: center;
+        display: block;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+    
+    .btn-logout {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .stat-number {
+        font-size: 28px;
+    }
+    
+    .admin-section {
+        padding: 15px;
+    }
+    
+    .admin-section h2 {
+        font-size: 1.3em;
+    }
+    
+    /* Form responsiveness */
     .create-email-form .form-group {
         flex-direction: column;
     }
@@ -306,7 +364,93 @@ body {
         width: 100%;
     }
     
+    .email-input-group input {
+        font-size: 14px;
+    }
+    
+    .domain-suffix {
+        font-size: 12px;
+        padding: 10px;
+    }
+    
     .btn-primary {
         width: 100%;
+        padding: 12px;
+    }
+    
+    /* Table responsiveness */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .admin-table {
+        font-size: 13px;
+        min-width: 600px;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 8px;
+        white-space: nowrap;
+    }
+    
+    .btn-view,
+    .btn-delete {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
+    /* Grid cards responsiveness */
+    .admin-section > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+    
+    /* Search form responsiveness */
+    .admin-section form[method="GET"] {
+        flex-direction: column !important;
+    }
+    
+    .admin-section form[method="GET"] input[type="text"] {
+        width: 100% !important;
+    }
+    
+    .admin-section form[method="GET"] button,
+    .admin-section form[method="GET"] a {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.3em;
+    }
+    
+    .admin-section h2 {
+        font-size: 1.1em;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+    
+    .admin-table {
+        font-size: 12px;
+        min-width: 500px;
+    }
+    
+    .login-box {
+        padding: 25px;
+    }
+    
+    .login-box h1 {
+        font-size: 1.5em;
     }
 }

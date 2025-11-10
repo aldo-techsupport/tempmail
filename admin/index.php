@@ -105,7 +105,7 @@ $generated_emails = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <span>Welcome, <?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
                 <a href="generate_emails.php" style="margin-right: 10px;">📧 Generate Email</a>
                 <a href="delete_emails.php" style="margin-right: 10px;">🗑️ Delete Email</a>
-                <a href="manage_admins.php" style="margin-right: 10px;">👥 Kelola Admin</a>
+                <!-- <a href="manage_admins.php" style="margin-right: 10px;">👥 Kelola Admin</a> -->
                 <a href="change_password.php" style="margin-right: 10px;">🔐 Ubah Password</a>
                 <a href="logout.php" class="btn-logout">Logout</a>
             </div>
