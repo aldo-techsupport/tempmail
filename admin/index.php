@@ -55,11 +55,39 @@ $stats = [
     'today_emails' => $conn->query("SELECT COUNT(*) FROM emails WHERE DATE(received_at) = CURDATE()")->fetchColumn(),
 ];
 
-// Get recent emails
-$recent_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails ORDER BY received_at DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
+// Handle search
+$search_generated = $_GET['search_generated'] ?? '';
+$search_inbox = $_GET['search_inbox'] ?? '';
 
-// Get generated emails
-$generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timestamp FROM generated_emails ORDER BY created_at DESC LIMIT 50")->fetchAll(PDO::FETCH_ASSOC);
+// Get recent emails with search
+$inbox_query = "SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails";
+if (!empty($search_inbox)) {
+    $inbox_query .= " WHERE to_email LIKE :search OR from_email LIKE :search OR subject LIKE :search";
+}
+$inbox_query .= " ORDER BY received_at DESC LIMIT 100";
+$stmt = $conn->prepare($inbox_query);
+if (!empty($search_inbox)) {
+    $search_param = '%' . $search_inbox . '%';
+    $stmt->execute(['search' => $search_param]);
+} else {
+    $stmt->execute();
+}
+$recent_emails = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get generated emails with search
+$generated_query = "SELECT *, UNIX_TIMESTAMP(created_at) as timestamp FROM generated_emails";
+if (!empty($search_generated)) {
+    $generated_query .= " WHERE email_address LIKE :search";
+}
+$generated_query .= " ORDER BY created_at DESC LIMIT 100";
+$stmt = $conn->prepare($generated_query);
+if (!empty($search_generated)) {
+    $search_param = '%' . $search_generated . '%';
+    $stmt->execute(['search' => $search_param]);
+} else {
+    $stmt->execute();
+}
+$generated_emails = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -75,7 +103,8 @@ $generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timest
             <h1>🔧 Admin Panel</h1>
             <div class="admin-nav">
                 <span>Welcome, <?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
-                <a href="generate_emails.php" style="margin-right: 10px;">📧 Generate Email Massal</a>
+                <a href="generate_emails.php" style="margin-right: 10px;">📧 Generate Email</a>
+                <a href="delete_emails.php" style="margin-right: 10px;">🗑️ Delete Email</a>
                 <a href="manage_admins.php" style="margin-right: 10px;">👥 Kelola Admin</a>
                 <a href="change_password.php" style="margin-right: 10px;">🔐 Ubah Password</a>
                 <a href="logout.php" class="btn-logout">Logout</a>
@@ -106,8 +135,8 @@ $generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timest
         </div>
 
         <div class="admin-section">
-            <h2>📧 Buat Email</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <h2>📧 Kelola Email</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
                     <h3 style="margin-top: 0;">Single Email</h3>
                     <p style="color: #666; font-size: 14px;">Buat satu email custom</p>
@@ -129,11 +158,33 @@ $generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timest
                         🚀 Mulai Generate
                     </a>
                 </div>
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 8px; text-align: center; color: white;">
+                    <h3 style="margin-top: 0; color: white;">Delete Email</h3>
+                    <p style="font-size: 14px; opacity: 0.9;">Hapus email secara massal atau individual</p>
+                    <a href="delete_emails.php" style="display: inline-block; background: white; color: #f5576c; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 600; margin-top: 10px;">
+                        🗑️ Kelola Delete
+                    </a>
+                </div>
             </div>
         </div>
 
         <div class="admin-section">
             <h2>📋 Email yang Sudah Dibuat</h2>
+            <div style="margin-bottom: 15px;">
+                <form method="GET" style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" name="search_generated" placeholder="🔍 Cari email..." value="<?php echo htmlspecialchars($search_generated); ?>" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    <?php if (!empty($search_inbox)): ?>
+                        <input type="hidden" name="search_inbox" value="<?php echo htmlspecialchars($search_inbox); ?>">
+                    <?php endif; ?>
+                    <button type="submit" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Cari</button>
+                    <?php if (!empty($search_generated)): ?>
+                        <a href="?<?php echo !empty($search_inbox) ? 'search_inbox=' . urlencode($search_inbox) : ''; ?>" style="padding: 10px 20px; background: #6c757d; color: white; border-radius: 4px; text-decoration: none; font-weight: 600;">Reset</a>
+                    <?php endif; ?>
+                </form>
+                <?php if (!empty($search_generated)): ?>
+                    <p style="margin-top: 10px; color: #666; font-size: 14px;">Ditemukan <?php echo count($generated_emails); ?> hasil untuk "<?php echo htmlspecialchars($search_generated); ?>"</p>
+                <?php endif; ?>
+            </div>
             <div class="table-container">
                 <table class="admin-table">
                     <thead>
@@ -165,6 +216,21 @@ $generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timest
 
         <div class="admin-section">
             <h2>📬 Email Masuk Terbaru</h2>
+            <div style="margin-bottom: 15px;">
+                <form method="GET" style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" name="search_inbox" placeholder="🔍 Cari email, pengirim, atau subject..." value="<?php echo htmlspecialchars($search_inbox); ?>" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    <?php if (!empty($search_generated)): ?>
+                        <input type="hidden" name="search_generated" value="<?php echo htmlspecialchars($search_generated); ?>">
+                    <?php endif; ?>
+                    <button type="submit" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Cari</button>
+                    <?php if (!empty($search_inbox)): ?>
+                        <a href="?<?php echo !empty($search_generated) ? 'search_generated=' . urlencode($search_generated) : ''; ?>" style="padding: 10px 20px; background: #6c757d; color: white; border-radius: 4px; text-decoration: none; font-weight: 600;">Reset</a>
+                    <?php endif; ?>
+                </form>
+                <?php if (!empty($search_inbox)): ?>
+                    <p style="margin-top: 10px; color: #666; font-size: 14px;">Ditemukan <?php echo count($recent_emails); ?> hasil untuk "<?php echo htmlspecialchars($search_inbox); ?>"</p>
+                <?php endif; ?>
+            </div>
             <div class="table-container">
                 <table class="admin-table">
                     <thead>

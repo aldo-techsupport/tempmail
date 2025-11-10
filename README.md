@@ -18,10 +18,10 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 - 🔐 Admin panel dengan login (database-based, password hashed)
 - ✏️ Buat custom email (contoh: support@alrelshop.my.id)
 - 🚀 Generate email massal (hingga 1000 email sekaligus)
-- 🎭 **NEW: Faker mode** - Generate email dengan nama realistis (john.smith, sarah_jones)
+- 🎭 **Faker mode** - Generate email dengan nama realistis (john.smith, sarah_jones)
+- 🗑️ **Delete email massal** - Hapus email secara bulk, by pattern, atau individual
 - 📊 Dashboard statistik
 - 👀 Monitor semua email masuk
-- 🗑️ Hapus email manual
 - 📋 Copy email dengan satu klik
 - 👥 Kelola multiple admin users
 - 🔐 Ubah password dengan aman
@@ -124,10 +124,6 @@ Fitur baru untuk admin yang memungkinkan generate banyak email sekaligus!
    - **Jumlah**: 1-1000 email
    - **Prefix**: Opsional (contoh: "user" → user1, user2, ...)
    - **Random String**: Centang untuk generate string random (contoh: user3f2a1b4c5d6e7f8g)
-   - **🎭 Faker Mode**: Centang untuk generate nama realistis (john.smith, sarah_jones123)
-     - Name Based: john.smith, sarah_jones123
-     - Combo: cooluser123, super_gamer456
-     - Word: john1234, sarah567
 4. Klik "Generate Email"
 5. Copy semua email yang dibuat dengan tombol "Copy Semua Email"
 
@@ -145,14 +141,8 @@ Fitur baru untuk admin yang memungkinkan generate banyak email sekaligus!
 - Input: Jumlah=2, Random=✓
 - Output: 3f2a1b4c5d6e7f8g@..., a7d9e2f1b8c4d5e6@...
 
-**🎭 Faker - Name Based (NEW!):**
-- Input: Jumlah=5, Faker=✓, Tipe=Name Based
-- Output: john.smith@..., sarah_jones123@..., michael.brown@..., emma.garcia@..., david_miller456@...
-
 ### Fitur:
 - ✅ Generate hingga 1000 email sekaligus
-- ✅ 🎭 **Faker mode** - Generate nama realistis (john.smith, sarah_jones)
-- ✅ 3 mode: Sequential, Random, Faker
 - ✅ Validasi duplikat otomatis
 - ✅ Copy semua email dengan satu klik
 - ✅ Copy individual email

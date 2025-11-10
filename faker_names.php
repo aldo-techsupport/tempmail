@@ -1,64 +1,51 @@
 <?php
 /**
- * Simple Faker Implementation for Email Generation
- * No external library needed
+ * Simple Faker Class for Generating Realistic Email Usernames
+ * Generates realistic-looking email addresses without external dependencies
  */
 
 class SimpleFaker {
+    
     private $firstNames = [
-        'john', 'jane', 'michael', 'sarah', 'david', 'emma', 'james', 'olivia',
-        'robert', 'sophia', 'william', 'ava', 'richard', 'isabella', 'thomas', 'mia',
-        'charles', 'charlotte', 'daniel', 'amelia', 'matthew', 'harper', 'anthony', 'evelyn',
-        'mark', 'abigail', 'donald', 'emily', 'steven', 'elizabeth', 'paul', 'sofia',
-        'andrew', 'avery', 'joshua', 'ella', 'kenneth', 'scarlett', 'kevin', 'grace',
-        'brian', 'chloe', 'george', 'victoria', 'edward', 'madison', 'ronald', 'luna',
-        'timothy', 'hannah', 'jason', 'lily', 'jeffrey', 'aria', 'ryan', 'layla',
-        'jacob', 'zoe', 'gary', 'penelope', 'nicholas', 'riley', 'eric', 'nora',
-        'jonathan', 'hazel', 'stephen', 'ellie', 'larry', 'violet', 'justin', 'aurora',
-        'scott', 'savannah', 'brandon', 'audrey', 'benjamin', 'brooklyn', 'samuel', 'bella',
-        'raymond', 'claire', 'gregory', 'skylar', 'frank', 'lucy', 'alexander', 'paisley',
-        'patrick', 'everly', 'jack', 'anna', 'dennis', 'caroline', 'jerry', 'nova',
-        // Indonesian names
-        'budi', 'siti', 'ahmad', 'dewi', 'agus', 'rina', 'andi', 'maya',
-        'rudi', 'ani', 'hendra', 'lina', 'dedi', 'yuni', 'bambang', 'sri',
-        'joko', 'wati', 'tono', 'fitri', 'eko', 'sari', 'doni', 'ratna',
-        'adi', 'indah', 'roni', 'ayu', 'yanto', 'dian', 'hadi', 'ika',
+        'john', 'james', 'robert', 'michael', 'william', 'david', 'richard', 'joseph', 'thomas', 'charles',
+        'mary', 'patricia', 'jennifer', 'linda', 'elizabeth', 'barbara', 'susan', 'jessica', 'sarah', 'karen',
+        'daniel', 'matthew', 'anthony', 'mark', 'donald', 'steven', 'paul', 'andrew', 'joshua', 'kenneth',
+        'emily', 'ashley', 'amanda', 'melissa', 'deborah', 'stephanie', 'rebecca', 'laura', 'sharon', 'cynthia',
+        'christopher', 'brian', 'kevin', 'george', 'edward', 'ronald', 'timothy', 'jason', 'jeffrey', 'ryan',
+        'nancy', 'betty', 'sandra', 'margaret', 'dorothy', 'lisa', 'michelle', 'kimberly', 'angela', 'helen'
     ];
     
     private $lastNames = [
-        'smith', 'johnson', 'williams', 'brown', 'jones', 'garcia', 'miller', 'davis',
-        'rodriguez', 'martinez', 'hernandez', 'lopez', 'gonzalez', 'wilson', 'anderson', 'thomas',
-        'taylor', 'moore', 'jackson', 'martin', 'lee', 'perez', 'thompson', 'white',
-        'harris', 'sanchez', 'clark', 'ramirez', 'lewis', 'robinson', 'walker', 'young',
-        'allen', 'king', 'wright', 'scott', 'torres', 'nguyen', 'hill', 'flores',
-        'green', 'adams', 'nelson', 'baker', 'hall', 'rivera', 'campbell', 'mitchell',
-        'carter', 'roberts', 'gomez', 'phillips', 'evans', 'turner', 'diaz', 'parker',
-        'cruz', 'edwards', 'collins', 'reyes', 'stewart', 'morris', 'morales', 'murphy',
-        'cook', 'rogers', 'gutierrez', 'ortiz', 'morgan', 'cooper', 'peterson', 'bailey',
-        'reed', 'kelly', 'howard', 'ramos', 'kim', 'cox', 'ward', 'richardson',
-        // Indonesian names
-        'santoso', 'wijaya', 'kusuma', 'pratama', 'saputra', 'permana', 'setiawan', 'gunawan',
-        'hidayat', 'nugroho', 'wibowo', 'kurniawan', 'susanto', 'lestari', 'utomo', 'putra',
-        'suharto', 'raharjo', 'suryanto', 'hartono', 'firmansyah', 'budiman', 'hakim', 'rahman',
+        'smith', 'johnson', 'williams', 'brown', 'jones', 'garcia', 'miller', 'davis', 'rodriguez', 'martinez',
+        'hernandez', 'lopez', 'gonzalez', 'wilson', 'anderson', 'thomas', 'taylor', 'moore', 'jackson', 'martin',
+        'lee', 'perez', 'thompson', 'white', 'harris', 'sanchez', 'clark', 'ramirez', 'lewis', 'robinson',
+        'walker', 'young', 'allen', 'king', 'wright', 'scott', 'torres', 'nguyen', 'hill', 'flores',
+        'green', 'adams', 'nelson', 'baker', 'hall', 'rivera', 'campbell', 'mitchell', 'carter', 'roberts'
     ];
     
     private $adjectives = [
-        'cool', 'super', 'mega', 'ultra', 'pro', 'master', 'expert', 'ninja',
-        'king', 'queen', 'boss', 'chief', 'prime', 'elite', 'alpha', 'beta',
-        'smart', 'fast', 'quick', 'swift', 'rapid', 'turbo', 'hyper', 'max',
-        'real', 'true', 'pure', 'fresh', 'new', 'hot', 'top', 'best',
+        'cool', 'super', 'mega', 'ultra', 'pro', 'epic', 'awesome', 'great', 'best', 'top',
+        'smart', 'fast', 'quick', 'bright', 'happy', 'lucky', 'sunny', 'blue', 'red', 'green',
+        'dark', 'light', 'wild', 'free', 'bold', 'brave', 'true', 'real', 'pure', 'fresh'
     ];
     
     private $nouns = [
-        'user', 'player', 'gamer', 'coder', 'dev', 'admin', 'member', 'client',
-        'customer', 'buyer', 'seller', 'trader', 'agent', 'manager', 'leader', 'hero',
-        'star', 'rock', 'legend', 'champion', 'winner', 'fighter', 'warrior', 'knight',
+        'user', 'gamer', 'player', 'master', 'king', 'queen', 'hero', 'star', 'ninja', 'dragon',
+        'tiger', 'wolf', 'eagle', 'lion', 'bear', 'fox', 'hawk', 'shark', 'panther', 'falcon',
+        'warrior', 'knight', 'wizard', 'hunter', 'ranger', 'fighter', 'racer', 'rider', 'pilot', 'captain'
+    ];
+    
+    private $words = [
+        'alpha', 'beta', 'gamma', 'delta', 'omega', 'sigma', 'theta', 'phoenix', 'nexus', 'apex',
+        'vortex', 'matrix', 'cyber', 'digital', 'tech', 'byte', 'pixel', 'code', 'data', 'cloud',
+        'storm', 'thunder', 'lightning', 'fire', 'ice', 'wind', 'earth', 'water', 'shadow', 'light'
     ];
     
     /**
-     * Generate random email username
-     * @param string $type Type of generation: 'name', 'combo', 'word'
-     * @return string
+     * Generate a random username based on type
+     * 
+     * @param string $type Type of username: 'name', 'combo', or 'word'
+     * @return string Generated username
      */
     public function generateUsername($type = 'name') {
         switch ($type) {
@@ -74,67 +61,81 @@ class SimpleFaker {
     }
     
     /**
-     * Generate name-based username (firstname.lastname or firstname_lastname)
+     * Generate name-based username (e.g., john.smith, sarah_jones123)
      */
     private function generateNameBased() {
-        $first = $this->firstNames[array_rand($this->firstNames)];
-        $last = $this->lastNames[array_rand($this->lastNames)];
-        $separator = rand(0, 1) ? '.' : '_';
+        $firstName = $this->randomElement($this->firstNames);
+        $lastName = $this->randomElement($this->lastNames);
         
-        // Sometimes add number
-        if (rand(0, 2) == 0) {
-            $number = rand(1, 999);
-            return $first . $separator . $last . $number;
-        }
+        $formats = [
+            '%s.%s',           // john.smith
+            '%s_%s',           // john_smith
+            '%s%s',            // johnsmith
+            '%s.%s%d',         // john.smith123
+            '%s_%s%d',         // john_smith456
+            '%s%s%d',          // johnsmith789
+            '%s.%s%d%d',       // john.smith12
+            '%s%d',            // john123
+        ];
         
-        return $first . $separator . $last;
+        $format = $this->randomElement($formats);
+        $number = rand(1, 999);
+        $number2 = rand(10, 99);
+        
+        return sprintf($format, $firstName, $lastName, $number, $number2);
     }
     
     /**
-     * Generate combo-based username (adjective + noun + number)
+     * Generate combo-based username (e.g., cooluser123, super_gamer456)
      */
     private function generateComboBased() {
-        $adj = $this->adjectives[array_rand($this->adjectives)];
-        $noun = $this->nouns[array_rand($this->nouns)];
-        $number = rand(1, 9999);
+        $adjective = $this->randomElement($this->adjectives);
+        $noun = $this->randomElement($this->nouns);
         
         $formats = [
-            $adj . $noun . $number,
-            $adj . '_' . $noun . $number,
-            $adj . '.' . $noun . $number,
-            $noun . $number,
+            '%s%s%d',          // cooluser123
+            '%s_%s%d',         // cool_user456
+            '%s%s',            // cooluser
+            '%s_%s',           // cool_user
+            '%s%d%s',          // cool123user
         ];
         
-        return $formats[array_rand($formats)];
+        $format = $this->randomElement($formats);
+        $number = rand(1, 999);
+        
+        return sprintf($format, $adjective, $noun, $number);
     }
     
     /**
-     * Generate word-based username (firstname + number)
+     * Generate word-based username (e.g., alpha123, phoenix456)
      */
     private function generateWordBased() {
-        $first = $this->firstNames[array_rand($this->firstNames)];
-        $number = rand(100, 9999);
+        $firstName = $this->randomElement($this->firstNames);
+        $word = $this->randomElement($this->words);
         
         $formats = [
-            $first . $number,
-            $first . '_' . $number,
-            $first . '.' . $number,
+            '%s%d',            // john1234
+            '%s_%d',           // john_1234
+            '%s%s',            // johnalpha
+            '%s_%s',           // john_alpha
+            '%s%d%s',          // john123alpha
+            '%s%s%d',          // johnalpha456
         ];
         
-        return $formats[array_rand($formats)];
+        $format = $this->randomElement($formats);
+        $number = rand(100, 9999);
+        
+        // Randomly choose between firstName or word
+        $base = rand(0, 1) ? $firstName : $word;
+        $second = rand(0, 1) ? $word : '';
+        
+        return sprintf($format, $base, $number, $second);
     }
     
     /**
-     * Get random first name
+     * Get random element from array
      */
-    public function getFirstName() {
-        return $this->firstNames[array_rand($this->firstNames)];
-    }
-    
-    /**
-     * Get random last name
-     */
-    public function getLastName() {
-        return $this->lastNames[array_rand($this->lastNames)];
+    private function randomElement($array) {
+        return $array[array_rand($array)];
     }
 }

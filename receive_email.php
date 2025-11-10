@@ -24,10 +24,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Validate email domain
     if (strpos($to_email, EMAIL_DOMAIN) !== false) {
-        if (saveEmail($to_email, $from_email, $subject, $body, $headers)) {
+        // Save email and extract OTP
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("INSERT INTO emails (to_email, from_email, subject, body, headers, received_at) 
+                               VALUES (:to_email, :from_email, :subject, :body, :headers, NOW())");
+        
+        $success = $stmt->execute([
+            'to_email' => $to_email,
+            'from_email' => $from_email,
+            'subject' => $subject,
+            'body' => $body,
+            'headers' => $headers
+        ]);
+        
+        if ($success) {
+            $email_id = $conn->lastInsertId();
+            
+            // Try to extract OTP from email content
+            $otp_code = extractOTPFromContent($subject, $body);
+            
+            if ($otp_code) {
+                // Save OTP to database
+                saveOTPCode($to_email, $otp_code, $from_email, $subject, $email_id);
+                error_log("OTP extracted and saved: $otp_code for email: $to_email");
+            }
+            
             http_response_code(200);
             error_log("Email saved successfully");
-            echo json_encode(['success' => true, 'message' => 'Email received']);
+            echo json_encode(['success' => true, 'message' => 'Email received', 'otp_detected' => !empty($otp_code)]);
         } else {
             http_response_code(500);
             error_log("Failed to save email");
@@ -73,8 +97,32 @@ if (php_sapi_name() === 'cli') {
         
         // Validate and save
         if (strpos($to_email, EMAIL_DOMAIN) !== false) {
-            saveEmail($to_email, $from_email, $subject, $parsed_body, $headers);
-            echo "Email received and saved\n";
+            // Save email
+            $conn = getDBConnection();
+            $stmt = $conn->prepare("INSERT INTO emails (to_email, from_email, subject, body, headers, received_at) 
+                                   VALUES (:to_email, :from_email, :subject, :body, :headers, NOW())");
+            
+            $success = $stmt->execute([
+                'to_email' => $to_email,
+                'from_email' => $from_email,
+                'subject' => $subject,
+                'body' => $parsed_body,
+                'headers' => $headers
+            ]);
+            
+            if ($success) {
+                $email_id = $conn->lastInsertId();
+                
+                // Try to extract OTP
+                $otp_code = extractOTPFromContent($subject, $parsed_body);
+                
+                if ($otp_code) {
+                    saveOTPCode($to_email, $otp_code, $from_email, $subject, $email_id);
+                    echo "Email received and saved with OTP: $otp_code\n";
+                } else {
+                    echo "Email received and saved\n";
+                }
+            }
         } else {
             echo "Invalid domain\n";
         }

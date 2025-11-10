@@ -224,7 +224,8 @@ $total_generated = $conn->query("SELECT COUNT(*) FROM generated_emails")->fetchC
         <header class="admin-header">
             <h1>📧 Generate Email Massal</h1>
             <div class="admin-nav">
-                <a href="index.php">← Kembali ke Dashboard</a>
+                <a href="index.php">← Dashboard</a>
+                <a href="delete_emails.php" style="margin-right: 10px;">🗑️ Delete Email</a>
                 <a href="logout.php" class="btn-logout">Logout</a>
             </div>
         </header>
@@ -248,7 +249,7 @@ $total_generated = $conn->query("SELECT COUNT(*) FROM generated_emails")->fetchC
                 
                 <div class="form-group">
                     <label for="count">Jumlah Email (Max: 1000)</label>
-                    <input type="number" id="count" name="count" min="1" max="1000" value="0" required>
+                    <input type="number" id="count" name="count" min="1" max="1000" value="10" required>
                     <div class="form-help">Masukkan jumlah email yang ingin di-generate (1-1000)</div>
                 </div>
                 
@@ -269,7 +270,7 @@ $total_generated = $conn->query("SELECT COUNT(*) FROM generated_emails")->fetchC
                 <div class="form-group" style="border: 2px solid #28a745; padding: 15px; border-radius: 8px; background: #f0fff4;">
                     <label style="color: #28a745; font-size: 16px;">
                         <input type="checkbox" name="use_faker" id="use_faker">
-                        🎭 Use Faker Tools 
+                        🎭 Gunakan Faker (Nama Realistis)
                     </label>
                     <div class="form-help" style="color: #155724; margin-bottom: 10px;">Generate email dengan nama-nama realistis seperti john.smith, sarah_jones, dll.</div>
                     
@@ -336,30 +337,9 @@ $total_generated = $conn->query("SELECT COUNT(*) FROM generated_emails")->fetchC
             });
         }
         
-        // Toggle faker options
-        document.getElementById('use_faker').addEventListener('change', function() {
-            const fakerOptions = document.getElementById('faker_options');
-            const useRandom = document.getElementById('use_random');
+        // Toggle prefix field based on random checkbox
+        document.getElementById('use_random').addEventListener('change', function() {
             const prefixInput = document.getElementById('prefix');
-            
-            if (this.checked) {
-                fakerOptions.style.display = 'block';
-                // Disable other options when faker is enabled
-                useRandom.disabled = true;
-                useRandom.checked = false;
-                prefixInput.disabled = true;
-                prefixInput.value = '';
-            } else {
-                fakerOptions.style.display = 'none';
-                // Enable other options
-               = false;
-              ut.disabled = false;
-            }
-        });
-      
-     Toix fieldrandom checkbox
-        document.getElementById('use_raEventListener('change', function(
-     stput = docum.getElementById('prefix');
             if (this.checked) {
                 prefixInput.placeholder = 'user (opsional)';
             } else {
