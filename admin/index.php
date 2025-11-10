@@ -75,6 +75,7 @@ $generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timest
             <h1>🔧 Admin Panel</h1>
             <div class="admin-nav">
                 <span>Welcome, <?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Admin'); ?></span>
+                <a href="generate_emails.php" style="margin-right: 10px;">📧 Generate Email Massal</a>
                 <a href="manage_admins.php" style="margin-right: 10px;">👥 Kelola Admin</a>
                 <a href="change_password.php" style="margin-right: 10px;">🔐 Ubah Password</a>
                 <a href="logout.php" class="btn-logout">Logout</a>
@@ -105,17 +106,30 @@ $generated_emails = $conn->query("SELECT *, UNIX_TIMESTAMP(created_at) as timest
         </div>
 
         <div class="admin-section">
-            <h2>📧 Buat Custom Email</h2>
-            <form method="POST" class="create-email-form">
-                <input type="hidden" name="action" value="create_email">
-                <div class="form-group">
-                    <div class="email-input-group">
-                        <input type="text" name="custom_email" placeholder="nama-email" required pattern="[a-zA-Z0-9_-]+" title="Hanya huruf, angka, dash, dan underscore">
-                        <span class="domain-suffix"><?php echo EMAIL_DOMAIN; ?></span>
-                    </div>
-                    <button type="submit" class="btn-primary">Buat Email</button>
+            <h2>📧 Buat Email</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                    <h3 style="margin-top: 0;">Single Email</h3>
+                    <p style="color: #666; font-size: 14px;">Buat satu email custom</p>
+                    <form method="POST" class="create-email-form">
+                        <input type="hidden" name="action" value="create_email">
+                        <div class="form-group">
+                            <div class="email-input-group">
+                                <input type="text" name="custom_email" placeholder="nama-email" required pattern="[a-zA-Z0-9_-]+" title="Hanya huruf, angka, dash, dan underscore">
+                                <span class="domain-suffix"><?php echo EMAIL_DOMAIN; ?></span>
+                            </div>
+                            <button type="submit" class="btn-primary">Buat Email</button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px; text-align: center; color: white;">
+                    <h3 style="margin-top: 0; color: white;">Generate Email Massal</h3>
+                    <p style="font-size: 14px; opacity: 0.9;">Generate hingga 1000 email sekaligus!</p>
+                    <a href="generate_emails.php" style="display: inline-block; background: white; color: #667eea; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: 600; margin-top: 10px;">
+                        🚀 Mulai Generate
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div class="admin-section">

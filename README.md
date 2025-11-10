@@ -17,6 +17,8 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 ### Admin Features:
 - 🔐 Admin panel dengan login (database-based, password hashed)
 - ✏️ Buat custom email (contoh: support@alrelshop.my.id)
+- 🚀 Generate email massal (hingga 1000 email sekaligus)
+- 🎭 **NEW: Faker mode** - Generate email dengan nama realistis (john.smith, sarah_jones)
 - 📊 Dashboard statistik
 - 👀 Monitor semua email masuk
 - 🗑️ Hapus email manual
@@ -103,8 +105,59 @@ tempmail_receiver: "|/usr/bin/php /www/wwwroot/tempmail.alrelshop.my.id/receive_
 1. Login ke https://tempmail.alrelshop.my.id/admin/
 2. Buat custom email (contoh: `support`)
 3. Email akan dibuat: `support@alrelshop.my.id`
-4. Monitor semua email masuk di dashboard
-5. Kelola dan hapus email jika diperlukan
+4. **Generate Email Massal**: Klik "Generate Email Massal" untuk membuat hingga 1000 email sekaligus
+   - Pilih jumlah email (1-1000)
+   - Tambahkan prefix (opsional)
+   - Gunakan random string atau sequential number
+   - Copy semua email yang di-generate dengan satu klik
+5. Monitor semua email masuk di dashboard
+6. Kelola dan hapus email jika diperlukan
+
+## 🚀 Generate Email Massal
+
+Fitur baru untuk admin yang memungkinkan generate banyak email sekaligus!
+
+### Cara Menggunakan:
+1. Login ke admin panel
+2. Klik menu "📧 Generate Email Massal" atau card di dashboard
+3. Atur parameter:
+   - **Jumlah**: 1-1000 email
+   - **Prefix**: Opsional (contoh: "user" → user1, user2, ...)
+   - **Random String**: Centang untuk generate string random (contoh: user3f2a1b4c5d6e7f8g)
+   - **🎭 Faker Mode**: Centang untuk generate nama realistis (john.smith, sarah_jones123)
+     - Name Based: john.smith, sarah_jones123
+     - Combo: cooluser123, super_gamer456
+     - Word: john1234, sarah567
+4. Klik "Generate Email"
+5. Copy semua email yang dibuat dengan tombol "Copy Semua Email"
+
+### Contoh Penggunaan:
+
+**Sequential (dengan prefix):**
+- Input: Jumlah=5, Prefix="test"
+- Output: test1@..., test2@..., test3@..., test4@..., test5@...
+
+**Random (dengan prefix):**
+- Input: Jumlah=3, Prefix="user", Random=✓
+- Output: user3f2a1b4c@..., usera7d9e2f1@..., user8c4b5a6d@...
+
+**Random (tanpa prefix):**
+- Input: Jumlah=2, Random=✓
+- Output: 3f2a1b4c5d6e7f8g@..., a7d9e2f1b8c4d5e6@...
+
+**🎭 Faker - Name Based (NEW!):**
+- Input: Jumlah=5, Faker=✓, Tipe=Name Based
+- Output: john.smith@..., sarah_jones123@..., michael.brown@..., emma.garcia@..., david_miller456@...
+
+### Fitur:
+- ✅ Generate hingga 1000 email sekaligus
+- ✅ 🎭 **Faker mode** - Generate nama realistis (john.smith, sarah_jones)
+- ✅ 3 mode: Sequential, Random, Faker
+- ✅ Validasi duplikat otomatis
+- ✅ Copy semua email dengan satu klik
+- ✅ Copy individual email
+- ✅ Statistik real-time
+- ✅ Transaction-safe (rollback jika error)
 
 ## 🛠️ Troubleshooting
 
