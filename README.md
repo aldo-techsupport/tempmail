@@ -6,22 +6,25 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 
 ### User Features:
 - 📧 Generate email random otomatis
-- 🔑 Token akses untuk restore email lama
 - 📬 Menerima email dari luar (real-time)
 - 🔄 Auto-refresh inbox setiap 10 detik
 - ♾️ Unlimited email generation (1000+)
 - 🗄️ Database MySQL (bukan SQLite)
 - 🧹 Auto-cleanup email lama (24 jam)
 - 📱 Responsive design
-- 🔗 Direct URL access dengan token
+- 🕐 Timestamp menggunakan waktu lokal komputer (bukan waktu server)
 
 ### Admin Features:
-- 🔐 Admin panel dengan login
+- 🔐 Admin panel dengan login (database-based, password hashed)
 - ✏️ Buat custom email (contoh: support@alrelshop.my.id)
+- 🚀 Generate email massal (hingga 1000 email sekaligus)
+- 🎭 **Faker mode** - Generate email dengan nama realistis (john.smith, sarah_jones)
+- 🗑️ **Delete email massal** - Hapus email secara bulk, by pattern, atau individual
 - 📊 Dashboard statistik
 - 👀 Monitor semua email masuk
-- 🗑️ Hapus email manual
 - 📋 Copy email dengan satu klik
+- 👥 Kelola multiple admin users
+- 🔐 Ubah password dengan aman
 
 ## 🚀 Quick Start
 
@@ -30,8 +33,13 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 - **Admin**: https://tempmail.alrelshop.my.id/admin/
 
 ### Login Admin:
-- Username: `admin`
-- Password: `admin123`
+- **Username**: `admin`
+- **Password**: `admin123` (default - segera ubah setelah setup!)
+
+### Setup Admin (Pertama Kali):
+1. Jalankan: `https://tempmail.alrelshop.my.id/admin/setup_admin.php`
+2. Login dengan kredensial default
+3. Segera ubah password di menu "Ubah Password"
 
 ## 📁 File Structure
 
@@ -58,11 +66,12 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 
 ### Database (config.php):
 ```php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'madev');
-define('DB_PASS', 'madev');
-define('DB_NAME', 'madev');
-define('EMAIL_DOMAIN', '@alrelshop.my.id');
+<?php
+$host = 'localhost';
+$dbname = 'XXXXX';
+$username = 'XXXXX';
+$password = 'XXXXX';
+?>
 ```
 
 ### Postfix Configuration:
@@ -96,8 +105,49 @@ tempmail_receiver: "|/usr/bin/php /www/wwwroot/tempmail.alrelshop.my.id/receive_
 1. Login ke https://tempmail.alrelshop.my.id/admin/
 2. Buat custom email (contoh: `support`)
 3. Email akan dibuat: `support@alrelshop.my.id`
-4. Monitor semua email masuk di dashboard
-5. Kelola dan hapus email jika diperlukan
+4. **Generate Email Massal**: Klik "Generate Email Massal" untuk membuat hingga 1000 email sekaligus
+   - Pilih jumlah email (1-1000)
+   - Tambahkan prefix (opsional)
+   - Gunakan random string atau sequential number
+   - Copy semua email yang di-generate dengan satu klik
+5. Monitor semua email masuk di dashboard
+6. Kelola dan hapus email jika diperlukan
+
+## 🚀 Generate Email Massal
+
+Fitur baru untuk admin yang memungkinkan generate banyak email sekaligus!
+
+### Cara Menggunakan:
+1. Login ke admin panel
+2. Klik menu "📧 Generate Email Massal" atau card di dashboard
+3. Atur parameter:
+   - **Jumlah**: 1-1000 email
+   - **Prefix**: Opsional (contoh: "user" → user1, user2, ...)
+   - **Random String**: Centang untuk generate string random (contoh: user3f2a1b4c5d6e7f8g)
+4. Klik "Generate Email"
+5. Copy semua email yang dibuat dengan tombol "Copy Semua Email"
+
+### Contoh Penggunaan:
+
+**Sequential (dengan prefix):**
+- Input: Jumlah=5, Prefix="test"
+- Output: test1@..., test2@..., test3@..., test4@..., test5@...
+
+**Random (dengan prefix):**
+- Input: Jumlah=3, Prefix="user", Random=✓
+- Output: user3f2a1b4c@..., usera7d9e2f1@..., user8c4b5a6d@...
+
+**Random (tanpa prefix):**
+- Input: Jumlah=2, Random=✓
+- Output: 3f2a1b4c5d6e7f8g@..., a7d9e2f1b8c4d5e6@...
+
+### Fitur:
+- ✅ Generate hingga 1000 email sekaligus
+- ✅ Validasi duplikat otomatis
+- ✅ Copy semua email dengan satu klik
+- ✅ Copy individual email
+- ✅ Statistik real-time
+- ✅ Transaction-safe (rollback jika error)
 
 ## 🛠️ Troubleshooting
 

@@ -17,7 +17,7 @@ function generateRandomEmail() {
 // Get all emails for specific address
 function getEmails($email_address) {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT * FROM emails WHERE to_email = :email ORDER BY received_at DESC");
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails WHERE to_email = :email ORDER BY received_at DESC");
     $stmt->execute(['email' => $email_address]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -25,7 +25,7 @@ function getEmails($email_address) {
 // Get single email by ID
 function getEmailById($id) {
     $conn = getDBConnection();
-    $stmt = $conn->prepare("SELECT * FROM emails WHERE id = :id");
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(received_at) as timestamp FROM emails WHERE id = :id");
     $stmt->execute(['id' => $id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
@@ -107,5 +107,92 @@ function getEmailByToken($token) {
     }
     
     return null;
+}
+
+// Extract OTP code from email content
+function extractOTPFromContent($subject, $body) {
+    $content = $subject . ' ' . $body;
+    
+    // Pattern untuk mendeteksi OTP
+    $patterns = [
+        '/\b(\d{4,8})\b/',                          // 4-8 digit numbers
+        '/code[:\s]+(\d{4,8})/i',                   // "code: 123456"
+        '/otp[:\s]+(\d{4,8})/i',                    // "OTP: 123456"
+        '/verification[:\s]+(\d{4,8})/i',           // "verification: 123456"
+        '/kode[:\s]+(\d{4,8})/i',                   // "kode: 123456" (Indonesian)
+        '/pin[:\s]+(\d{4,8})/i',                    // "PIN: 123456"
+        '/token[:\s]+(\d{4,8})/i',                  // "token: 123456"
+        '/(\d{4,8})\s+is\s+your/i',                 // "123456 is your code"
+        '/your\s+code\s+is[:\s]+(\d{4,8})/i',       // "your code is 123456"
+        '/(\d{3}[-\s]\d{3})/i',                     // "123-456" or "123 456"
+    ];
+    
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $content, $matches)) {
+            // Clean up the OTP (remove spaces and dashes)
+            $otp = preg_replace('/[-\s]/', '', $matches[1]);
+            
+            // Validate OTP length (4-8 digits)
+            if (strlen($otp) >= 4 && strlen($otp) <= 8 && ctype_digit($otp)) {
+                return $otp;
+            }
+        }
+    }
+    
+    return null;
+}
+
+// Save OTP code to database
+function saveOTPCode($email_address, $otp_code, $sender, $subject, $email_id = null) {
+    $conn = getDBConnection();
+    
+    try {
+        $stmt = $conn->prepare("INSERT INTO otp_codes (email_address, otp_code, sender, subject, email_id, extracted_at) 
+                               VALUES (:email, :otp, :sender, :subject, :email_id, NOW())");
+        
+        return $stmt->execute([
+            'email' => $email_address,
+            'otp' => $otp_code,
+            'sender' => $sender,
+            'subject' => $subject,
+            'email_id' => $email_id
+        ]);
+    } catch (PDOException $e) {
+        error_log("Failed to save OTP: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Get OTP codes for specific email address
+function getOTPCodes($email_address, $limit = 10) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(extracted_at) as timestamp 
+                           FROM otp_codes 
+                           WHERE email_address = :email 
+                           ORDER BY extracted_at DESC 
+                           LIMIT :limit");
+    $stmt->bindValue(':email', $email_address, PDO::PARAM_STR);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Get latest OTP code for email address
+function getLatestOTP($email_address) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(extracted_at) as timestamp 
+                           FROM otp_codes 
+                           WHERE email_address = :email 
+                           ORDER BY extracted_at DESC 
+                           LIMIT 1");
+    $stmt->execute(['email' => $email_address]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Mark OTP as used
+function markOTPAsUsed($otp_id) {
+    $conn = getDBConnection();
+    $stmt = $conn->prepare("UPDATE otp_codes SET is_used = 1, used_at = NOW() WHERE id = :id");
+    return $stmt->execute(['id' => $otp_id]);
 }
 ?>

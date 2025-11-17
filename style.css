@@ -434,45 +434,273 @@ button {
     background: #218838;
 }
 
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 3% auto;
+        padding: 20px;
+    }
+}
+
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
     header h1 {
         font-size: 1.8em;
+    }
+    
+    header p {
+        font-size: 1em;
+    }
+    
+    .email-box {
+        padding: 20px;
     }
     
     .email-display {
         flex-direction: column;
     }
     
+    #tempEmail {
+        min-width: 100%;
+        font-size: 1em;
+        padding: 12px;
+    }
+    
     button {
         width: 100%;
+        padding: 12px 20px;
+        font-size: 0.95em;
+    }
+    
+    .inbox {
+        padding: 20px;
     }
     
     .inbox-header {
         flex-direction: column;
         gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .inbox-header h2 {
+        font-size: 1.3em;
     }
     
     .btn-refresh {
         width: 100%;
     }
     
+    .email-item {
+        padding: 12px;
+    }
+    
+    .email-subject {
+        font-size: 1em;
+    }
+    
+    .email-from,
+    .email-date {
+        font-size: 0.85em;
+    }
+    
+    /* Modal responsiveness */
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+        padding: 20px;
+        max-height: 85vh;
+    }
+    
+    .close {
+        right: 15px;
+        top: 10px;
+        font-size: 30px;
+    }
+    
+    #emailContent h3 {
+        font-size: 1.1em;
+        padding-right: 30px;
+    }
+    
+    #emailContent .email-meta {
+        padding: 12px;
+        font-size: 13px;
+    }
+    
+    #emailContent .email-body {
+        padding: 15px;
+        font-size: 13px;
+        max-height: 60vh;
+    }
+    
+    .view-toggle {
+        flex-wrap: wrap;
+    }
+    
+    .view-toggle button {
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    /* Token section responsiveness */
+    .token-section {
+        padding: 15px;
+    }
+    
     .token-info {
         flex-direction: column;
+        align-items: stretch;
     }
     
     #tokenInput {
         width: 100%;
+        min-width: 100%;
+        font-size: 0.85em;
     }
     
     .btn-copy-token {
         width: 100%;
     }
     
+    .token-url {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .token-url small {
+        font-size: 0.8em;
+    }
+    
+    .btn-copy-url {
+        width: 100%;
+    }
+    
+    /* Restore section responsiveness */
+    .restore-section {
+        padding: 15px;
+    }
+    
     #restoreForm {
         flex-direction: column;
+        align-items: stretch;
     }
     
     #restoreToken {
         width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+    }
+    
+    .btn-restore-submit {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+    
+    header h1 {
+        font-size: 1.5em;
+    }
+    
+    header p {
+        font-size: 0.9em;
+    }
+    
+    .email-box,
+    .inbox,
+    .restore-section {
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    #tempEmail {
+        font-size: 0.9em;
+        padding: 10px;
+    }
+    
+    button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+    
+    .email-item {
+        padding: 10px;
+    }
+    
+    .email-subject {
+        font-size: 0.95em;
+    }
+    
+    .email-from,
+    .email-date {
+        font-size: 0.8em;
+    }
+    
+    .modal-content {
+        width: 98%;
+        padding: 15px;
+        margin: 2% auto;
+    }
+    
+    #emailContent h3 {
+        font-size: 1em;
+    }
+    
+    #emailContent .email-body {
+        padding: 12px;
+        font-size: 12px;
+    }
+    
+    .view-toggle button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .token-section {
+        padding: 12px;
+    }
+    
+    #tokenInput {
+        font-size: 0.8em;
+        padding: 8px;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .modal-content {
+        max-height: 90vh;
+    }
+    
+    #emailContent .email-body {
+        max-height: 50vh;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    button,
+    .email-item,
+    .btn-view,
+    .btn-delete,
+    .btn-copy-small {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .email-item {
+        padding: 15px;
     }
 }

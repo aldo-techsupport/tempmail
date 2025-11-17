@@ -49,8 +49,7 @@ $emails = getEmails($current_email);
             <h1>📧 Temporary Email</h1>
             <p>Email sementara untuk melindungi privasi Anda</p>
             <div style="text-align: center; margin-top: 10px;">
-                <a href="admin/" style="color: white; text-decoration: none; font-size: 12px; opacity: 0.8;">Admin Panel</a>
-            </div>
+               
         </header>
 
         <div class="email-box">
@@ -105,7 +104,7 @@ $emails = getEmails($current_email);
                             <div class="email-subject">
                                 <?php echo htmlspecialchars($email['subject']); ?>
                             </div>
-                            <div class="email-date">
+                            <div class="email-date" data-timestamp="<?php echo htmlspecialchars($email['received_at']); ?>" data-unix="<?php echo $email['timestamp']; ?>">
                                 <?php echo date('d/m/Y H:i', strtotime($email['received_at'])); ?>
                             </div>
                         </div>

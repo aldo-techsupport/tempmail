@@ -1,0 +1,143 @@
+╔═══════════════════════════════════════════════════════════╗
+║        CARA PAKAI API OTP - SUPER SIMPLE! 🚀             ║
+╚═══════════════════════════════════════════════════════════╝
+
+🎯 ENDPOINT UTAMA (PALING MUDAH!)
+
+┌───────────────────────────────────────────────────────────┐
+│ GET /api.php?action=get_latest_otp_global                 │
+│                                                            │
+│ ✓ Tidak perlu email parameter                            │
+│ ✓ Tidak perlu session                                     │
+│ ✓ Langsung dapat OTP terbaru dari SEMUA email            │
+└───────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 CONTOH PENGGUNAAN
+
+1️⃣  POSTMAN / INSOMNIA
+   ┌─────────────────────────────────────────────────────┐
+   │ Method: GET                                         │
+   │ URL: http://tempmail.alrelshop.my.id/api.php       │
+   │ Params:                                             │
+   │   - action: get_latest_otp_global                   │
+   └─────────────────────────────────────────────────────┘
+
+2️⃣  CURL (Terminal)
+   curl "http://tempmail.alrelshop.my.id/api.php?action=get_latest_otp_global"
+
+3️⃣  JAVASCRIPT (Browser/Node.js)
+   fetch('http://tempmail.alrelshop.my.id/api.php?action=get_latest_otp_global')
+     .then(r => r.json())
+     .then(data => {
+       console.log('OTP:', data.otp_code);
+       console.log('From:', data.sender);
+       console.log('To:', data.email_address);
+     });
+
+4️⃣  PYTHON
+   import requests
+   r = requests.get('http://tempmail.alrelshop.my.id/api.php?action=get_latest_otp_global')
+   data = r.json()
+   print(f"OTP: {data['otp_code']}")
+
+5️⃣  PHP
+   $url = 'http://tempmail.alrelshop.my.id/api.php?action=get_latest_otp_global';
+   $response = file_get_contents($url);
+   $data = json_decode($response, true);
+   echo "OTP: " . $data['otp_code'];
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ RESPONSE SUKSES
+
+{
+  "success": true,
+  "otp_code": "1999",
+  "email_address": "james.flores469@alrelshop.my.id",
+  "sender": "no-reply@cursor.sh",
+  "subject": "Masuk ke Cursor",
+  "extracted_at": "2025-11-10 07:27:06",
+  "is_used": 0,
+  "id": 15
+}
+
+❌ RESPONSE GAGAL (Belum ada OTP)
+
+{
+  "success": false,
+  "message": "No OTP found"
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔥 ENDPOINT LAINNYA
+
+1. Get Semua OTP (10 terakhir)
+   GET /api.php?action=get_all_latest_otps&limit=10
+
+2. Search OTP
+   GET /api.php?action=search_otp&search=cursor
+
+3. Get OTP untuk email tertentu
+   GET /api.php?action=get_latest_otp&email=your@email.com
+
+4. Tandai OTP sudah dipakai
+   POST /api.php?action=mark_otp_used
+   Body: otp_id=15
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 IMPORT KE POSTMAN
+
+File: OTP_API.postman_collection.json
+
+1. Buka Postman
+2. Click Import
+3. Pilih file OTP_API.postman_collection.json
+4. Semua endpoint langsung siap dipakai!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 USE CASE
+
+✓ Auto-fill OTP di aplikasi
+✓ Testing automation
+✓ Bot verification
+✓ Integration testing
+✓ Monitoring OTP delivery
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOKUMENTASI LENGKAP
+
+📄 API_OTP_DOCUMENTATION.md  → Dokumentasi API lengkap
+📄 QUICK_START_OTP.txt       → Quick start guide
+📄 README_OTP.md             → Dokumentasi utama
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 TESTING
+
+# Test semua endpoint
+php test_api_global.php
+
+# Test manual
+curl "http://tempmail.alrelshop.my.id/api.php?action=get_latest_otp_global"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIPS
+
+1. Gunakan get_latest_otp_global untuk kebanyakan use case
+2. Gunakan search_otp jika perlu filter spesifik
+3. Response selalu JSON format
+4. Check field "success" untuk validasi
+5. OTP otomatis dihapus setelah 24 jam
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 SELAMAT! API SIAP DIGUNAKAN!
+
+Sekarang Anda bisa ambil OTP dari email manapun dengan 1 request!

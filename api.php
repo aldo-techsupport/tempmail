@@ -71,6 +71,135 @@ switch ($action) {
         }
         break;
         
+    case 'get_otp_codes':
+        // Support both session and direct email parameter
+        $email = $_GET['email'] ?? $_SESSION['temp_email'] ?? '';
+        $limit = $_GET['limit'] ?? 10;
+        
+        if ($email) {
+            $otp_codes = getOTPCodes($email, $limit);
+            echo json_encode([
+                'success' => true, 
+                'otp_codes' => $otp_codes, 
+                'count' => count($otp_codes),
+                'email' => $email
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No email address. Use ?email=your@email.com']);
+        }
+        break;
+        
+    case 'get_latest_otp':
+        // Support both session and direct email parameter
+        $email = $_GET['email'] ?? $_SESSION['temp_email'] ?? '';
+        
+        if ($email) {
+            $otp = getLatestOTP($email);
+            if ($otp) {
+                echo json_encode([
+                    'success' => true, 
+                    'otp' => $otp['otp_code'],
+                    'sender' => $otp['sender'],
+                    'subject' => $otp['subject'],
+                    'extracted_at' => $otp['extracted_at'],
+                    'is_used' => $otp['is_used'],
+                    'email' => $email
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'No OTP found for this email']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No email address. Use ?email=your@email.com']);
+        }
+        break;
+        
+    case 'mark_otp_used':
+        $otp_id = $_POST['otp_id'] ?? 0;
+        
+        if ($otp_id) {
+            $success = markOTPAsUsed($otp_id);
+            echo json_encode(['success' => $success]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'OTP ID required']);
+        }
+        break;
+        
+    case 'get_all_latest_otps':
+        // Get latest OTP from ALL emails (no email parameter needed)
+        $limit = $_GET['limit'] ?? 10;
+        
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(extracted_at) as timestamp 
+                               FROM otp_codes 
+                               ORDER BY extracted_at DESC 
+                               LIMIT :limit");
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $otps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            'success' => true,
+            'otps' => $otps,
+            'count' => count($otps)
+        ]);
+        break;
+        
+    case 'get_latest_otp_global':
+        // Get THE latest OTP from any email (global)
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(extracted_at) as timestamp 
+                               FROM otp_codes 
+                               ORDER BY extracted_at DESC 
+                               LIMIT 1");
+        $stmt->execute();
+        $otp = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($otp) {
+            echo json_encode([
+                'success' => true,
+                'otp_code' => $otp['otp_code'],
+                'email_address' => $otp['email_address'],
+                'sender' => $otp['sender'],
+                'subject' => $otp['subject'],
+                'extracted_at' => $otp['extracted_at'],
+                'is_used' => $otp['is_used'],
+                'id' => $otp['id']
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No OTP found']);
+        }
+        break;
+        
+    case 'search_otp':
+        // Search OTP by code, sender, or email
+        $search = $_GET['search'] ?? '';
+        
+        if (empty($search)) {
+            echo json_encode(['success' => false, 'message' => 'Search parameter required']);
+            break;
+        }
+        
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT *, UNIX_TIMESTAMP(extracted_at) as timestamp 
+                               FROM otp_codes 
+                               WHERE otp_code LIKE :search 
+                                  OR sender LIKE :search 
+                                  OR email_address LIKE :search 
+                                  OR subject LIKE :search
+                               ORDER BY extracted_at DESC 
+                               LIMIT 20");
+        $searchParam = "%{$search}%";
+        $stmt->execute(['search' => $searchParam]);
+        $otps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            'success' => true,
+            'otps' => $otps,
+            'count' => count($otps),
+            'search' => $search
+        ]);
+        break;
+        
     default:
         echo json_encode(['success' => false, 'message' => 'Invalid action']);
 }
