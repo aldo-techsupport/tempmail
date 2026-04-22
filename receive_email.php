@@ -9,10 +9,16 @@ require_once 'config.php';
 require_once 'functions.php';
 
 // Enable error logging
-error_log("Receive email script called - Method: " . $_SERVER['REQUEST_METHOD']);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/email_receive.log');
+
+$request_method = $_SERVER['REQUEST_METHOD'] ?? 'CLI';
+error_log("Receive email script called - Method: " . $request_method);
+error_log("POST data: " . print_r($_POST, true));
+error_log("Raw input: " . file_get_contents('php://input'));
 
 // Method 1: Receive via HTTP POST (for webhook/API)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($request_method === 'POST') {
     // Support multiple POST formats
     $to_email = $_POST['to'] ?? $_POST['to_email'] ?? $_POST['recipient'] ?? '';
     $from_email = $_POST['from'] ?? $_POST['from_email'] ?? $_POST['sender'] ?? '';

@@ -1,1 +1,22 @@
- 
+RewriteEngine On
+
+# Allow CORS for API
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type"
+</IfModule>
+
+# Redirect all email webhook requests to receive_email.php
+RewriteCond %{REQUEST_METHOD} POST
+RewriteCond %{REQUEST_URI} ^/webhook [NC]
+RewriteRule ^webhook$ receive_email.php [L]
+
+# Protect admin directory
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Default document
+DirectoryIndex index.php index.html

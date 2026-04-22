@@ -1,9 +1,9 @@
 <?php
 // Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'madev');
-define('DB_PASS', 'madev');
-define('DB_NAME', 'madev');
+define('DB_HOST', '127.0.0.1');
+define('DB_USER', 'tempmail');
+define('DB_PASS', 'alrel1408');
+define('DB_NAME', 'tempmail');
 
 // Email Domain
 define('EMAIL_DOMAIN', '@alrelshop.my.id');

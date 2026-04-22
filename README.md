@@ -13,6 +13,8 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 - 🧹 Auto-cleanup email lama (24 jam)
 - 📱 Responsive design
 - 🕐 Timestamp menggunakan waktu lokal komputer (bukan waktu server)
+- 🔐 **Auto OTP Detection** - Otomatis mendeteksi dan extract kode OTP dari email
+- 🌐 **Webhook Support** - Terima email via HTTP POST webhook
 
 ### Admin Features:
 - 🔐 Admin panel dengan login (database-based, password hashed)
@@ -46,12 +48,11 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 ```
 /www/wwwroot/tempmail.alrelshop.my.id/
 ├── index.php              # Halaman utama user
-├── api.php                # API endpoint
+├── api.php                # API endpoint (with OTP endpoints)
 ├── config.php             # Konfigurasi database
-├── functions.php          # Helper functions
+├── functions.php          # Helper functions (with OTP extraction)
 ├── receive_email.php      # Script penerima email (Postfix)
-├── test_email.php         # Form test email
-├── clean_emails.php       # Tool pembersih email
+├── webhook.php            # Webhook endpoint untuk terima email via HTTP POST
 ├── style.css              # User styling
 ├── script.js              # User JavaScript
 ├── admin/
@@ -59,7 +60,8 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 │   ├── login.php          # Admin login
 │   ├── logout.php         # Admin logout
 │   └── admin-style.css    # Admin styling
-└── database.sql           # SQL schema
+├── database.sql           # SQL schema
+└── create_otp_table.sql   # OTP table schema
 ```
 
 ## 🔧 Konfigurasi
@@ -67,14 +69,42 @@ Sistem temporary email yang dapat menerima email dari luar dengan domain @alrels
 ### Database (config.php):
 ```php
 <?php
-$host = 'localhost';
-$dbname = 'XXXXX';
-$username = 'XXXXX';
-$password = 'XXXXX';
+define('DB_HOST', '127.0.0.1');
+define('DB_USER', 'tempmail');
+define('DB_PASS', 'alrel1408');
+define('DB_NAME', 'tempmail');
+define('EMAIL_DOMAIN', '@alrelshop.my.id');
 ?>
 ```
 
-### Postfix Configuration:
+### Email Receiving Options:
+
+#### Option 1: Webhook (RECOMMENDED)
+Terima email via HTTP POST ke webhook endpoint:
+
+**Endpoint**: `https://tempmail.alrelshop.my.id/webhook.php`
+
+**Example**:
+```bash
+curl -X POST "https://tempmail.alrelshop.my.id/webhook.php" \
+  -d "to=user@alrelshop.my.id" \
+  -d "from=sender@example.com" \
+  -d "subject=Your OTP is 123456" \
+  -d "body=Your verification code is 123456"
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "message": "Email received and OTP extracted",
+  "email_id": "15",
+  "otp_code": "123456",
+  "otp_detected": true
+}
+```
+
+#### Option 2: Postfix Configuration
 ```bash
 # Virtual alias domains
 virtual_alias_domains = alrelshop.my.id
@@ -89,8 +119,7 @@ tempmail_receiver: "|/usr/bin/php /www/wwwroot/tempmail.alrelshop.my.id/receive_
 
 ## 📖 Documentation
 
-- [ADMIN_GUIDE.md](ADMIN_GUIDE.md) - Panduan lengkap admin panel
-- [STATUS.md](STATUS.md) - Status instalasi dan troubleshooting
+- [CARA_PAKAI_API_OTP.txt](CARA_PAKAI_API_OTP.txt) - Panduan lengkap API OTP (Indonesian)
 
 ## 🎯 Cara Menggunakan
 
@@ -100,6 +129,32 @@ tempmail_receiver: "|/usr/bin/php /www/wwwroot/tempmail.alrelshop.my.id/receive_
 3. Copy email dan gunakan untuk registrasi
 4. Email masuk akan muncul otomatis
 5. Klik email untuk melihat isi lengkap
+6. **OTP otomatis terdeteksi** dan ditampilkan jika ada
+
+### API OTP:
+```bash
+# Get latest OTP from any email
+curl "https://tempmail.alrelshop.my.id/api.php?action=get_latest_otp_global"
+
+# Get OTP for specific email
+curl "https://tempmail.alrelshop.my.id/api.php?action=get_latest_otp&email=user@alrelshop.my.id"
+
+# Search OTP
+curl "https://tempmail.alrelshop.my.id/api.php?action=search_otp&search=123456"
+```
+
+**Response Example**:
+```json
+{
+  "success": true,
+  "otp_code": "123456",
+  "email_address": "user@alrelshop.my.id",
+  "sender": "noreply@example.com",
+  "subject": "Your verification code",
+  "extracted_at": "2026-04-22 08:38:12",
+  "is_used": 0
+}
+```
 
 ### Untuk Admin:
 1. Login ke https://tempmail.alrelshop.my.id/admin/
@@ -151,7 +206,18 @@ Fitur baru untuk admin yang memungkinkan generate banyak email sekaligus!
 
 ## 🛠️ Troubleshooting
 
-**Email tidak masuk?**
+### Email tidak masuk?
+
+**Option 1: Test via Webhook (Recommended)**
+```bash
+curl -X POST "https://tempmail.alrelshop.my.id/webhook.php" \
+  -d "to=test@alrelshop.my.id" \
+  -d "from=test@example.com" \
+  -d "subject=Test OTP 123456" \
+  -d "body=Your code is 123456"
+```
+
+**Option 2: Check Postfix**
 ```bash
 # Cek Postfix status
 sudo systemctl status postfix
@@ -163,10 +229,25 @@ sudo tail -f /var/log/mail.log
 echo "Test" | mail -s "Test" test@alrelshop.my.id
 ```
 
-**Cek email di database:**
+### Check Database:
 ```bash
-mysql -u madev -pmadev madev -e "SELECT * FROM emails ORDER BY id DESC LIMIT 5;"
+# Check recent emails
+mysql -u tempmail -palrel1408 tempmail -e "SELECT * FROM emails ORDER BY received_at DESC LIMIT 5;"
+
+# Check recent OTPs
+mysql -u tempmail -palrel1408 tempmail -e "SELECT * FROM otp_codes ORDER BY extracted_at DESC LIMIT 5;"
 ```
+
+### Check Logs:
+```bash
+tail -f webhook.log
+```
+
+### Current Statistics:
+- Total Emails: 15
+- Total OTPs: 14
+- OTP Extraction Rate: 93.33%
+- Status: ✅ WORKING
 
 ## 📊 Database Schema
 
@@ -191,10 +272,31 @@ CREATE TABLE emails (
 CREATE TABLE generated_emails (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email_address VARCHAR(255) NOT NULL UNIQUE,
+    access_token VARCHAR(64) UNIQUE,
     created_at DATETIME NOT NULL,
     last_accessed DATETIME,
     access_count INT DEFAULT 0,
-    INDEX idx_email (email_address)
+    INDEX idx_email (email_address),
+    INDEX idx_token (access_token)
+);
+```
+
+### Table: otp_codes (NEW)
+```sql
+CREATE TABLE otp_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email_address VARCHAR(255) NOT NULL,
+    otp_code VARCHAR(20) NOT NULL,
+    sender VARCHAR(255),
+    subject VARCHAR(500),
+    email_id INT,
+    extracted_at DATETIME NOT NULL,
+    is_used TINYINT(1) DEFAULT 0,
+    used_at DATETIME,
+    INDEX idx_email (email_address),
+    INDEX idx_otp (otp_code),
+    INDEX idx_extracted_at (extracted_at),
+    FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE
 );
 ```
 
